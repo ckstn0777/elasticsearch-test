@@ -1,0 +1,22 @@
+version: "3.4"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - es01:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+volumes:
+  es01:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge
