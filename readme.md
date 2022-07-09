@@ -3,7 +3,7 @@
 - ElasticSearch를 간단히 실습해보고 알아보기 위한 목적
 - 추가) 엘라스틱 서치 검색 엔진 만들어보기 할 예정임
 
-
+<br>
 
 ### 실습 환경 구성
 1. 일단 로컬이든 어디든 엘라스틱 서치 구성을 해야겠지? -> 도커 컴포즈 사용
@@ -12,7 +12,7 @@
 
 참고로 mac 기준으로 실습 환경 구성 진행했다. 
 
-
+<br>
 
 ### 참고 사이트
 - 공식 사이트 : [https://www.elastic.co/kr/elasticsearch/](https://www.elastic.co/kr/elasticsearch/)
