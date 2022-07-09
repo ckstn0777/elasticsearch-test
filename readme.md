@@ -1,12 +1,18 @@
 ### 개요
-
 - ElasticSearch Getting Started
 - ElasticSearch를 간단히 실습해보고 알아보기 위한 목적
+- 추가) 엘라스틱 서치 검색 엔진 만들어보기 할 예정임
 
-<br>
+
+### 실습 환경 구성
+1. 일단 로컬이든 어디든 엘라스틱 서치 구성을 해야겠지? -> 도커 컴포즈 사용
+2. 그리고 나서 데이터를 수집해서 넣어야겠지?
+3. 마지막으로 검색 엔진을 만들어보는 테스트를 진행하면 됨…
+
+참고로 mac 기준으로 실습 환경 구성 진행했다. 
+
 
 ### 참고 사이트
-
 - 공식 사이트 : [https://www.elastic.co/kr/elasticsearch/](https://www.elastic.co/kr/elasticsearch/)
 - 공식 문서 가이드 : [https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
 - Elastic 가이드북(한국어) : [https://esbook.kimjmin.net/01-overview/1.1-elastic-stack/1.1.1-elasticsearch](https://esbook.kimjmin.net/01-overview/1.1-elastic-stack/1.1.1-elasticsearch)
