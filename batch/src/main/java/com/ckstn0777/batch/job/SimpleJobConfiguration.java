@@ -1,5 +1,6 @@
 package com.ckstn0777.batch.job;
 
+import com.ckstn0777.batch.dto.BookDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -7,47 +8,43 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 
-@Slf4j // logging
-@RequiredArgsConstructor // 생성자 의존성 주입
+
+@Slf4j
+@RequiredArgsConstructor
 @Configuration
 public class SimpleJobConfiguration {
+    private static final String PROPERTY_REST_API_URL = "rest.api.url"; // api 요청 url
+
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job simpleJob() {
+    public Job simpleJob(Step collectStep) { // 이런식으로 의존성 주입을 받을 수도 있구나
         return jobBuilderFactory.get("simpleJob")
-                .start(simpleStep1(null))
-                .next(simpleStep2(null))
+                .start(collectStep)
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step simpleStep1(@Value("#{jobParameters[requestDate]}") String requestDate) {
-        return stepBuilderFactory.get("simpleStep1")
-                .tasklet((contribution, chunkContext) -> {
-                    log.info(">>>>> This is Step1");
-                    log.info(">>>>> requestDate = {}", requestDate);
-                    return RepeatStatus.FINISHED;
-                })
+    public Step collectStep(ItemReader<BookDTO> reader) {
+        return stepBuilderFactory.get("collectStep")
+                .<BookDTO, BookDTO>chunk(10)
+                .reader(reader)
                 .build();
     }
 
+
     @Bean
-    @JobScope
-    public Step simpleStep2(@Value("#{jobParameters[requestDate]}") String requestDate) {
-        return stepBuilderFactory.get("simpleStep2")
-                .tasklet((contribution, chunkContext) -> {
-                    log.info(">>>>> This is Step2");
-                    log.info(">>>>> requestDate = {}", requestDate);
-                    return RepeatStatus.FINISHED;
-                })
-                .build();
+    public ItemReader<BookDTO> reader(Environment environment, RestTemplate restTemplate) {
+        // Rest API 로 데이터를 가져온다.
+        return new RESTBookReader(environment.getRequiredProperty(PROPERTY_REST_API_URL),
+                restTemplate);
     }
 }
