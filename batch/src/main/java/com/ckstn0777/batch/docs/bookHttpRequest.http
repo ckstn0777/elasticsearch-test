@@ -1,0 +1,7 @@
+### 국립 중앙도서관 소장자료
+GET http://api.kcisa.kr/openapi/service/rest/meta16/getNlTot?serviceKey=55ae7991-0659-438a-89d5-cd3e13defa92&numOfRows=10&pageNo=1
+Accept: application/json
+
+### 사서 추천도서
+GET http://api.kcisa.kr/openapi/service/rest/meta2/NLCFsase?serviceKey=ab2bef86-0eaa-4f01-a427-4d5748a77c54&numOfRows=10&pageNo=1
+Accept: application/json

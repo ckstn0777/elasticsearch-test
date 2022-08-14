@@ -9,6 +9,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -33,18 +34,23 @@ public class SimpleJobConfiguration {
 
     @Bean
     @JobScope
-    public Step collectStep(ItemReader<BookDTO> reader) {
+    public Step collectStep(ItemReader<BookDTO> reader, ItemWriter<BookDTO> writer) {
         return stepBuilderFactory.get("collectStep")
                 .<BookDTO, BookDTO>chunk(10)
                 .reader(reader)
+                .writer(writer)
                 .build();
     }
-
 
     @Bean
     public ItemReader<BookDTO> reader(Environment environment, RestTemplate restTemplate) {
         // Rest API 로 데이터를 가져온다.
         return new RESTBookReader(environment.getRequiredProperty(PROPERTY_REST_API_URL),
                 restTemplate);
+    }
+
+    @Bean
+    public ItemWriter<BookDTO> writer() {
+        return new BookWriter();
     }
 }
