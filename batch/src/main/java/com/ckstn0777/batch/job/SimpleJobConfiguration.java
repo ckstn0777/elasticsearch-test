@@ -1,6 +1,7 @@
 package com.ckstn0777.batch.job;
 
 import com.ckstn0777.batch.dto.BookDTO;
+import com.ckstn0777.batch.entity.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -8,12 +9,15 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
+
+import javax.persistence.EntityManagerFactory;
 
 
 @Slf4j
@@ -24,6 +28,7 @@ public class SimpleJobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job simpleJob(Step collectStep) { // 이런식으로 의존성 주입을 받을 수도 있구나
@@ -34,10 +39,11 @@ public class SimpleJobConfiguration {
 
     @Bean
     @JobScope
-    public Step collectStep(ItemReader<BookDTO> reader, ItemWriter<BookDTO> writer) {
+    public Step collectStep(ItemReader<BookDTO> reader, JpaItemWriter<Book> writer) {
         return stepBuilderFactory.get("collectStep")
-                .<BookDTO, BookDTO>chunk(10)
+                .<BookDTO, Book>chunk(10)
                 .reader(reader)
+                .processor(jpaItemProcessor())
                 .writer(writer)
                 .build();
     }
@@ -50,7 +56,19 @@ public class SimpleJobConfiguration {
     }
 
     @Bean
-    public ItemWriter<BookDTO> writer() {
-        return new BookWriter();
+    public ItemProcessor<BookDTO, Book> jpaItemProcessor() {
+        // 가져온 데이터를 적절히 가공해준다.
+        return BookDTO -> Book.builder()
+                .title(BookDTO.getTitle())
+                .author(BookDTO.getPerson())
+                .build();
+    }
+
+    @Bean
+    public JpaItemWriter<Book> writer() {
+        // 데이터베이스에 저장한다.
+        JpaItemWriter<Book> jpaItemWriter = new JpaItemWriter<>();
+        jpaItemWriter.setEntityManagerFactory(entityManagerFactory);
+        return jpaItemWriter;
     }
 }
