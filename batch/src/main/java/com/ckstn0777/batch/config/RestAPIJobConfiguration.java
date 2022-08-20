@@ -1,7 +1,8 @@
-package com.ckstn0777.batch.job;
+package com.ckstn0777.batch.config;
 
 import com.ckstn0777.batch.dto.BookDTO;
 import com.ckstn0777.batch.entity.Book;
+import com.ckstn0777.batch.reader.RESTBookReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -11,7 +12,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,14 +24,13 @@ import javax.persistence.EntityManagerFactory;
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
-public class JobConfiguration {
+public class RestAPIJobConfiguration {
     private static final String PROPERTY_REST_API_URL = "rest.api.url"; // api 요청 url
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
 
-    ///////////////////////////////////////////////////////////////////////
     @Bean
     public Job simpleJob(Step collectStep) { // 이런식으로 의존성 주입을 받을 수도 있구나
         return jobBuilderFactory.get("simpleJob")
@@ -72,34 +71,5 @@ public class JobConfiguration {
         JpaItemWriter<Book> jpaItemWriter = new JpaItemWriter<>();
         jpaItemWriter.setEntityManagerFactory(entityManagerFactory);
         return jpaItemWriter;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    @Bean
-    public Job elasticBulkJob(Step elasticBulkStep) {
-        return jobBuilderFactory.get("elasticBulkJob")
-                .start(elasticBulkStep)
-                .build();
-    }
-
-    @Bean
-    public Step elasticBulkStep() {
-        return stepBuilderFactory.get("elasticBulkStep")
-                .<Book, Book>chunk(10)
-                .reader(jpaBookReader())
-                .writer(elasticBulkWriter())
-                .build();
-    }
-
-    @Bean
-    public ItemReader<Book> jpaBookReader() {
-        // TODO : 구현 예정
-        return null;
-    }
-
-    @Bean
-    public ItemWriter<Book> elasticBulkWriter() {
-        // TODO : 구현 예정
-        return null;
     }
 }

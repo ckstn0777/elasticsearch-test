@@ -1,4 +1,4 @@
-package com.ckstn0777.batch.job;
+package com.ckstn0777.batch.reader;
 
 import com.ckstn0777.batch.dto.BookDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,7 +32,7 @@ public class RESTBookReader implements ItemReader {
 
     private List<BookDTO> bookData;
 
-    RESTBookReader(String apiUrl, RestTemplate restTemplate) {
+    public RESTBookReader(String apiUrl, RestTemplate restTemplate) {
         this.apiUrl = apiUrl;
         this.restTemplate = restTemplate;
 
